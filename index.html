@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surmesur Jeans Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #1D1D1B;
+    --white: #FFFFFF;
+    --tea: #D7D6D0;
+    --pale-gray: #DDDDDE;
+    --gray: #605F60;
+    --light-bg: #F5F4F0;
+    --warn: #C4883A;
+    --danger: #A33B3B;
+    --success: #3A7D5C;
+  }
+  body {
+    font-family: 'Outfit', Helvetica, Arial, sans-serif;
+    background: var(--light-bg);
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--black);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-text {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: var(--white);
+    text-decoration: none;
+    line-height: 1;
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--tea);
+    font-weight: 300;
+  }
+
+  .container {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  .section {
+    background: var(--white);
+    border: 1px solid var(--pale-gray);
+    border-radius: 10px;
+    padding: 24px 24px 20px;
+    margin-bottom: 14px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .section-number {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--black);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--black);
+    letter-spacing: -0.2px;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .fit-cards {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .fit-card {
+    flex: 1;
+    border: 1.5px solid var(--pale-gray);
+    border-radius: 6px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--white);
+  }
+  .fit-card:hover { border-color: var(--gray); }
+  .fit-card.selected {
+    border-color: var(--black);
+    background: var(--black);
+    color: var(--white);
+  }
+  .fit-card .fit-name {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .fit-card .fit-desc {
+    font-size: 9px;
+    color: var(--gray);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+  .fit-card.selected .fit-desc { color: var(--tea); }
+
+  .toggle-group {
+    display: flex;
+    gap: 8px;
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 10px;
+    border: 1.5px solid var(--pale-gray);
+    border-radius: 6px;
+    background: var(--white);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--black);
+    text-align: center;
+  }
+  .toggle-btn:hover { border-color: var(--gray); }
+  .toggle-btn.selected {
+    border-color: var(--black);
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .input-group { margin-bottom: 14px; }
+  .input-group:last-child { margin-bottom: 0; }
+  .input-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 5px;
+    font-weight: 400;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--pale-gray);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--black);
+    background: var(--white);
+    transition: border-color 0.2s ease;
+    -moz-appearance: textfield;
+  }
+  .input-field::-webkit-outer-spin-button,
+  .input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .input-field:focus { outline: none; border-color: var(--black); }
+  .input-unit {
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 300;
+    white-space: nowrap;
+  }
+
+  select.input-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23605F60'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+    cursor: pointer;
+  }
+
+  .estimate-box {
+    background: var(--light-bg);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .estimate-box.visible { display: flex; }
+  .est-label {
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+  .est-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--black);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .two-col .input-group { margin-bottom: 0; }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .three-col .input-group { margin-bottom: 0; }
+
+  .sep {
+    height: 1px;
+    background: var(--pale-gray);
+    margin: 16px 0;
+  }
+
+  .note {
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 300;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .calc-row { text-align: center; margin: 24px 0 8px; }
+  .btn-calc {
+    padding: 14px 44px;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .btn-calc:hover { background: var(--gray); }
+
+  #resultsSection { display: none; }
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .result-card {
+    background: var(--light-bg);
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+  .result-card .r-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    font-weight: 400;
+    margin-bottom: 1px;
+  }
+  .result-card .r-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--black);
+  }
+  .result-card .r-unit {
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+  .result-card .r-note {
+    font-size: 9px;
+    color: var(--gray);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+  .result-card.config {
+    grid-column: 1 / -1;
+    background: var(--black);
+    color: var(--white);
+  }
+  .result-card.config .r-label { color: var(--tea); }
+
+  .warning {
+    background: #FDF6EC;
+    border-left: 3px solid var(--warn);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 0 6px 6px 0;
+    font-size: 11px;
+    color: #7A5C28;
+    font-weight: 300;
+    line-height: 1.4;
+  }
+
+  .reset-row { text-align: center; margin-top: 14px; }
+  .reset-btn {
+    padding: 8px 20px;
+    border: 1.5px solid var(--pale-gray);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    color: var(--gray);
+    transition: all 0.2s ease;
+  }
+  .reset-btn:hover { border-color: var(--black); color: var(--black); }
+
+  @media (max-width: 500px) {
+    .container { padding: 16px 12px 60px; }
+    .section { padding: 18px 16px 16px; }
+    .fit-cards { flex-direction: column; }
+    .results-grid { grid-template-columns: 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .header { padding: 14px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="logo-text">SURMESUR</span>
+  <span class="header-label">Jeans Calculator</span>
+</div>
+
+<div class="container">
+
+  <!-- 1. FIT & FABRIC -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">Fit & Fabric</div>
+    </div>
+    <div class="input-label">Fit</div>
+    <div class="fit-cards">
+      <div class="fit-card" data-fit="slim" onclick="selectFit('slim')">
+        <div class="fit-name">Slim</div>
+        <div class="fit-desc">Modern taper</div>
+      </div>
+      <div class="fit-card" data-fit="regular" onclick="selectFit('regular')">
+        <div class="fit-name">Regular</div>
+        <div class="fit-desc">Moderate taper</div>
+      </div>
+      <div class="fit-card" data-fit="relaxed" onclick="selectFit('relaxed')">
+        <div class="fit-name">Relaxed</div>
+        <div class="fit-desc">Gentle taper</div>
+      </div>
+    </div>
+    <div class="input-label">Stretch</div>
+    <div class="toggle-group">
+      <button class="toggle-btn" onclick="selectStretch('stretch')">Stretch</button>
+      <button class="toggle-btn" onclick="selectStretch('no-stretch')">No Stretch</button>
+    </div>
+  </div>
+
+  <!-- 2. MEASUREMENTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Measurements</div>
+    </div>
+
+    <div class="three-col">
+      <div class="input-group">
+        <div class="input-label">Trouser waist size</div>
+        <div class="input-row">
+          <input type="number" class="input-field" id="waistInput" step="0.5" min="26" max="50" placeholder="e.g. 34" oninput="updateLive()">
+          <span class="input-unit">in</span>
+        </div>
+        <div class="note" id="waistNote"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Seat (skin)</div>
+        <div class="input-row">
+          <input type="number" class="input-field" id="seatInput" step="0.25" min="28" max="60" placeholder="e.g. 39" oninput="updateLive()">
+          <span class="input-unit">in</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Thigh (skin)</div>
+        <div class="input-row">
+          <input type="number" class="input-field" id="thighInput" step="0.25" min="16" max="38" placeholder="e.g. 23" oninput="updateLive()">
+          <span class="input-unit">in</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="input-label">Rise preference</div>
+    <div class="toggle-group" style="margin-bottom:12px;">
+      <button class="toggle-btn rise-btn" onclick="selectRise('low')">Low</button>
+      <button class="toggle-btn rise-btn" onclick="selectRise('mid')">Mid</button>
+      <button class="toggle-btn rise-btn" onclick="selectRise('high')">High</button>
+    </div>
+
+    <div class="estimate-box" id="uriseEstBox">
+      <div>
+        <div class="est-label">Calculated U-rise (finished thigh + rise)</div>
+      </div>
+      <div class="est-value" id="uriseEstValue">--</div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-label">U-rise (optional — for validation)</div>
+      <div class="input-row">
+        <input type="number" class="input-field" id="uriseInput" step="0.25" min="18" max="45" placeholder="Optional check" oninput="updateLive()">
+        <span class="input-unit">in</span>
+      </div>
+      <div class="note" id="uriseNote"></div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="input-group">
+      <div class="input-label">Client height</div>
+      <div class="input-row">
+        <select class="input-field" id="heightSelect" onchange="updateHeight()" style="max-width:180px;">
+          <option value="">Select height</option>
+          <option value="62">5'2"</option>
+          <option value="63">5'3"</option>
+          <option value="64">5'4"</option>
+          <option value="65">5'5"</option>
+          <option value="66">5'6"</option>
+          <option value="67">5'7"</option>
+          <option value="68">5'8"</option>
+          <option value="69">5'9"</option>
+          <option value="70">5'10"</option>
+          <option value="71">5'11"</option>
+          <option value="72">6'0"</option>
+          <option value="73">6'1"</option>
+          <option value="74">6'2"</option>
+          <option value="75">6'3"</option>
+          <option value="76">6'4"</option>
+          <option value="77">6'5"</option>
+          <option value="78">6'6"</option>
+          <option value="79">6'7"</option>
+          <option value="80">6'8"</option>
+          <option value="81">6'9"</option>
+          <option value="82">6'10"</option>
+          <option value="83">6'11"</option>
+          <option value="84">7'0"</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="estimate-box" id="lengthEstBox">
+      <div>
+        <div class="est-label">Recommended outseam range</div>
+      </div>
+      <div class="est-value" id="lengthEstValue">--</div>
+    </div>
+
+    <div class="two-col">
+      <div class="input-group">
+        <div class="input-label">Left length (optional — validation)</div>
+        <div class="input-row">
+          <input type="number" class="input-field" id="leftLenInput" step="0.25" min="28" max="52" placeholder="Measured outseam" oninput="updateLengthValidation()">
+          <span class="input-unit">in</span>
+        </div>
+        <div class="note" id="leftLenNote"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Right length (optional — validation)</div>
+        <div class="input-row">
+          <input type="number" class="input-field" id="rightLenInput" step="0.25" min="28" max="52" placeholder="Measured outseam" oninput="updateLengthValidation()">
+          <span class="input-unit">in</span>
+        </div>
+        <div class="note" id="rightLenNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-row">
+    <button class="btn-calc" onclick="calculateResults()">Calculate &rarr;</button>
+  </div>
+
+  <div id="resultsSection">
+    <div class="section" style="border: 2px solid var(--black);">
+      <div class="section-header">
+        <div class="section-number" style="background:var(--success);">&#10003;</div>
+        <div class="section-title">Studio Output</div>
+      </div>
+      <div id="warnings"></div>
+      <div class="results-grid" id="resultsGrid"></div>
+      <div class="reset-row">
+        <button class="reset-btn" onclick="resetCalc()">New Calculation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = { fit: null, stretch: null, risePref: null };
+const RISE_SPLIT = 42;
+
+function selectFit(fit) {
+  state.fit = fit;
+  document.querySelectorAll('.fit-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('[data-fit="'+fit+'"]').classList.add('selected');
+  updateLive();
+}
+
+function selectStretch(s) {
+  state.stretch = s;
+  const btns = document.querySelectorAll('.section')[0].querySelectorAll('.toggle-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  if (s === 'stretch') btns[0].classList.add('selected');
+  else btns[1].classList.add('selected');
+  updateLive();
+}
+
+function selectRise(r) {
+  state.risePref = r;
+  document.querySelectorAll('.rise-btn').forEach(b => b.classList.remove('selected'));
+  if (r === 'low') document.querySelectorAll('.rise-btn')[0].classList.add('selected');
+  else if (r === 'mid') document.querySelectorAll('.rise-btn')[1].classList.add('selected');
+  else document.querySelectorAll('.rise-btn')[2].classList.add('selected');
+  updateLive();
+}
+
+function updateLive() {
+  const waist = parseFloat(document.getElementById('waistInput').value);
+  const thigh = parseFloat(document.getElementById('thighInput').value);
+  const urise = parseFloat(document.getElementById('uriseInput').value);
+
+  const wn = document.getElementById('waistNote');
+  if (!isNaN(waist) && state.stretch) {
+    const fin = state.stretch === 'stretch' ? waist - 0.5 : waist;
+    wn.textContent = '→ Finished: ' + fin.toFixed(1) + '"';
+  } else wn.textContent = '';
+
+  const box = document.getElementById('uriseEstBox');
+  if (!isNaN(thigh) && thigh > 0 && state.risePref && state.fit) {
+    const tE = getThighEase(thigh, state.fit);
+    const fThigh = thigh + tE;
+    let est = fThigh;
+    if (state.risePref === 'mid') est = fThigh + 1.5;
+    else if (state.risePref === 'high') est = fThigh + 3.0;
+    document.getElementById('uriseEstValue').textContent = est.toFixed(1) + '"';
+    box.classList.add('visible');
+  } else box.classList.remove('visible');
+
+  const un = document.getElementById('uriseNote');
+  if (!isNaN(urise) && !isNaN(thigh) && thigh > 0 && state.risePref && state.fit) {
+    const tE = getThighEase(thigh, state.fit);
+    const fT = thigh + tE;
+    let calcU = fT;
+    if (state.risePref === 'mid') calcU = fT + 1.5;
+    else if (state.risePref === 'high') calcU = fT + 3.0;
+    if (Math.abs(urise - calcU) > 2)
+      un.innerHTML = '<span style="color:var(--danger);">⚠ Measured differs from calculated (' + calcU.toFixed(1) + '") by more than 2". Double-check.</span>';
+    else
+      un.innerHTML = '<span style="color:var(--success);">✓ Consistent with calculated value.</span>';
+  } else un.textContent = '';
+}
+
+const HEIGHT_RANGES = {62:[36,38],63:[36,39],64:[37,39],65:[37,40],66:[38,40],67:[38,41],68:[39,41],69:[39,42],70:[40,43],71:[41,43],72:[42,44],73:[42,45],74:[43,45],75:[44,46],76:[44,46],77:[45,47],78:[45,47],79:[46,48],80:[46,48],81:[47,49],82:[47,49],83:[48,50],84:[48,50]};
+
+function updateHeight() {
+  const h = parseInt(document.getElementById('heightSelect').value);
+  const box = document.getElementById('lengthEstBox');
+  if (!isNaN(h) && h > 0) {
+    const r = HEIGHT_RANGES[h] || [40,43];
+    document.getElementById('lengthEstValue').textContent = r[0] + '–' + r[1] + '"';
+    box.classList.add('visible');
+  } else {
+    box.classList.remove('visible');
+  }
+  updateLengthValidation();
+}
+
+function updateLengthValidation() {
+  const h = parseInt(document.getElementById('heightSelect').value);
+  const lLen = parseFloat(document.getElementById('leftLenInput').value);
+  const rLen = parseFloat(document.getElementById('rightLenInput').value);
+  const lNote = document.getElementById('leftLenNote');
+  const rNote = document.getElementById('rightLenNote');
+
+  if (!isNaN(h) && h > 0) {
+    const r = HEIGHT_RANGES[h] || [40,43];
+    if (!isNaN(lLen)) {
+      if (lLen >= r[0] && lLen <= r[1])
+        lNote.innerHTML = '<span style="color:var(--success);">✓ Within range.</span>';
+      else
+        lNote.innerHTML = '<span style="color:var(--danger);">⚠ Outside expected range (' + r[0] + '–' + r[1] + '").</span>';
+    } else lNote.textContent = '';
+    if (!isNaN(rLen)) {
+      if (rLen >= r[0] && rLen <= r[1])
+        rNote.innerHTML = '<span style="color:var(--success);">✓ Within range.</span>';
+      else
+        rNote.innerHTML = '<span style="color:var(--danger);">⚠ Outside expected range (' + r[0] + '–' + r[1] + '").</span>';
+    } else rNote.textContent = '';
+  } else {
+    lNote.textContent = '';
+    rNote.textContent = '';
+  }
+}
+
+function roundToQuarter(n) {
+  return Math.round(n * 4) / 4;
+}
+
+function fmtQ(n) {
+  const frac = n % 1;
+  if (frac === 0) return n.toFixed(1);
+  return n.toFixed(2);
+}
+
+function getThighEase(t, fit) {
+  let b;
+  if (t < 22) b = 1.0;
+  else if (t < 24) b = 1.5;
+  else if (t < 27) b = 2.0;
+  else b = 2.5;
+  if (fit === 'regular') b += 1.0;
+  else if (fit === 'relaxed') b += 2.0;
+  return b;
+}
+
+function getSeatEase(fit) {
+  return fit === 'slim' ? 1.0 : fit === 'regular' ? 2.0 : 3.0;
+}
+
+function getRatios(fit, waist) {
+  let k, bt;
+  if (fit === 'slim') { k = 65; bt = 58; }
+  else if (fit === 'regular') { k = 71; bt = 65; }
+  else { k = 71; bt = 62; }
+  if (waist >= 40) { k -= 3; bt -= 2; }
+  else if (waist >= 38) { k -= 2; bt -= 1.5; }
+  else if (waist >= 36) { k -= 1; bt -= 1; }
+  return { knee: k / 100, bottom: bt / 100 };
+}
+
+function calculateResults() {
+  const waist = parseFloat(document.getElementById('waistInput').value);
+  const seat = parseFloat(document.getElementById('seatInput').value);
+  const thigh = parseFloat(document.getElementById('thighInput').value);
+  const measuredURise = parseFloat(document.getElementById('uriseInput').value);
+  const measuredLeft = parseFloat(document.getElementById('leftLenInput').value);
+  const measuredRight = parseFloat(document.getElementById('rightLenInput').value);
+  const height = parseInt(document.getElementById('heightSelect').value);
+
+  const miss = [];
+  if (!state.fit) miss.push('Fit');
+  if (!state.stretch) miss.push('Stretch');
+  if (isNaN(waist)) miss.push('Waist');
+  if (isNaN(seat)) miss.push('Seat');
+  if (isNaN(thigh)) miss.push('Thigh');
+  if (!state.risePref) miss.push('Rise preference');
+  if (isNaN(height)) miss.push('Client height');
+  if (miss.length) { alert('Please fill in: ' + miss.join(', ')); return; }
+
+  const fWaist = state.stretch === 'stretch' ? waist - 0.5 : waist;
+  const sE = getSeatEase(state.fit);
+  const fSeat = seat + sE;
+  const tE = getThighEase(thigh, state.fit);
+  const fThigh = thigh + tE;
+
+  // U-rise calculated from finished thigh + rise preference
+  let riseAdd = 0;
+  if (state.risePref === 'mid') riseAdd = 1.5;
+  else if (state.risePref === 'high') riseAdd = 3.0;
+  const fURise = fThigh + riseAdd;
+
+  const fFR = fURise * (RISE_SPLIT / 100);
+  const fBR = fURise * ((100 - RISE_SPLIT) / 100);
+  const rat = getRatios(state.fit, waist);
+  const fKnee = roundToQuarter(fThigh * rat.knee);
+  const fBottom = roundToQuarter(fThigh * rat.bottom);
+
+  // Length: use height range midpoint, override with measured if provided
+  const hRange = HEIGHT_RANGES[height] || [40,43];
+  const midLen = roundToQuarter((hRange[0] + hRange[1]) / 2);
+  const lLen = !isNaN(measuredLeft) ? measuredLeft : midLen;
+  const rLen = !isNaN(measuredRight) ? measuredRight : midLen;
+
+  const res = [
+    ['Left Length', lLen],
+    ['Right Length', rLen],
+    ['Seat', roundToQuarter(fSeat)],
+    ['Waist', roundToQuarter(fWaist)],
+    ['Front Rise', roundToQuarter(fFR)],
+    ['Back Rise', roundToQuarter(fBR)],
+    ['U-Rise', roundToQuarter(fURise)],
+    ['Thighs', roundToQuarter(fThigh)],
+    ['Knee', fKnee],
+    ['Bottom', fBottom],
+  ];
+
+  const warns = [];
+  const stRatio = fSeat / fThigh;
+  if (stRatio < 1.55 || stRatio > 1.85)
+    warns.push('Seat-to-thigh ratio is ' + stRatio.toFixed(2) + 'x (expected 1.55–1.85x). Check proportions.');
+  if (sE - tE > 1.5)
+    warns.push('Seat ease exceeds thigh ease by more than 1.5". Risk of balloon effect.');
+  if (!isNaN(measuredURise) && Math.abs(measuredURise - fURise) > 2)
+    warns.push('Measured U-rise (' + measuredURise.toFixed(1) + '") differs from calculated (' + fURise.toFixed(1) + '") by more than 2". Verify measurement.');
+  if (!isNaN(measuredLeft) && (measuredLeft < hRange[0] || measuredLeft > hRange[1]))
+    warns.push('Measured left length (' + measuredLeft.toFixed(1) + '") is outside expected range (' + hRange[0] + '–' + hRange[1] + '").');
+  if (!isNaN(measuredRight) && (measuredRight < hRange[0] || measuredRight > hRange[1]))
+    warns.push('Measured right length (' + measuredRight.toFixed(1) + '") is outside expected range (' + hRange[0] + '–' + hRange[1] + '").');
+
+  const wd = document.getElementById('warnings');
+  wd.innerHTML = '';
+  warns.forEach(w => { wd.innerHTML += '<div class="warning">⚠ ' + w + '</div>'; });
+
+  const g = document.getElementById('resultsGrid');
+  g.innerHTML = '';
+  res.forEach(r => {
+    g.innerHTML += '<div class="result-card"><div class="r-label">' + r[0] +
+      '</div><div class="r-value">' + fmtQ(r[1]) + '<span class="r-unit"> in</span></div></div>';
+  });
+
+  const fl = state.fit.charAt(0).toUpperCase() + state.fit.slice(1);
+  const sl = state.stretch === 'stretch' ? 'Stretch' : 'No Stretch';
+  const rl = state.risePref.charAt(0).toUpperCase() + state.risePref.slice(1);
+  g.innerHTML += '<div class="result-card config"><div class="r-label">Configuration</div>' +
+    '<div style="font-size:12px;font-weight:400;margin-top:3px;color:var(--white);">' +
+    fl + ' Fit · ' + sl + ' · ' + rl + ' Rise · Split ' +
+    RISE_SPLIT + '/' + (100 - RISE_SPLIT) + '</div></div>';
+
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetCalc() {
+  state.fit = null; state.stretch = null; state.risePref = null;
+  document.querySelectorAll('.fit-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('input').forEach(f => f.value = '');
+  document.getElementById('heightSelect').value = '';
+  document.querySelectorAll('.note').forEach(n => n.textContent = '');
+  document.getElementById('uriseEstBox').classList.remove('visible');
+  document.getElementById('lengthEstBox').classList.remove('visible');
+  document.getElementById('resultsSection').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
